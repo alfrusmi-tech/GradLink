@@ -1,6 +1,20 @@
 import express from "express";
+import {
+  createCompany,
+  updateCompany,
+  getCompanyById,
+  getCompanies,
+} from "../controllers/companyController.js";
+import { protect, authorize } from "../middleware/authMiddleware.js";
 
 const router = express.Router();
+
+router.post("/", protect, authorize("recruiter"), createCompany);
+router.put("/:id", protect, authorize("recruiter"), updateCompany);
+router.get("/:id", getCompanyById);
+router.get("/", protect, authorize("admin"), getCompanies);
+
+export default router;
 
 // Planned for next build stage:
 // POST   /api/companies          - create company profile (recruiter)
@@ -9,8 +23,3 @@ const router = express.Router();
 // GET    /api/companies          - list companies (admin)
 
 
-router.get("/", (req, res) => {
-  res.json({ message: "Company route working" });
-});
-
-export default router;

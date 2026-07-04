@@ -1,6 +1,23 @@
 import express from "express";
 
+import {
+  createJob,
+  getJobs,
+  getJobById,
+} from "../controllers/jobController.js";
+
+import { protect, authorize } from "../middleware/authMiddleware.js";
+
 const router = express.Router();
+
+// PUBLIC ROUTES
+router.get("/", getJobs);
+router.get("/:id", getJobById);
+
+// RECRUITER ONLY
+router.post("/", protect, authorize("recruiter"), createJob);
+
+export default router;
 
 // Planned for next build stage:
 // POST   /api/jobs               - post new job (recruiter)
@@ -11,8 +28,3 @@ const router = express.Router();
 // GET    /api/jobs/recruiter/mine - recruiter's own postings
 
 
-router.get("/", (req, res) => {
-  res.json({ message: "Job route working" });
-});
-
-export default router;

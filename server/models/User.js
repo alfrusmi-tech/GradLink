@@ -15,7 +15,6 @@ const userSchema = new mongoose.Schema(
     phone: { type: String, default: "" },
     location: { type: String, default: "" },
 
-    // Job seeker specific fields
     skills: [{ type: String }],
     education: [
       {
@@ -40,10 +39,8 @@ const userSchema = new mongoose.Schema(
     savedJobs: [{ type: mongoose.Schema.Types.ObjectId, ref: "Job" }],
     profileCompletion: { type: Number, default: 0 },
 
-    // Recruiter specific fields
     company: { type: mongoose.Schema.Types.ObjectId, ref: "Company" },
 
-    // Auth support fields
     isVerified: { type: Boolean, default: false },
     isActive: { type: Boolean, default: true },
     resetPasswordToken: { type: String },
@@ -52,15 +49,13 @@ const userSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-// Hash password before saving
-userSchema.pre("save", async function (next) {
-  if (!this.isModified("password")) return next();
+// Hash password before saving — no `next` needed, async function handles it
+userSchema.pre("save", async function () {
+  if (!this.isModified("password")) return;
   const salt = await bcrypt.genSalt(10);
   this.password = await bcrypt.hash(this.password, salt);
-  next();
 });
 
-// Compare entered password with hashed password
 userSchema.methods.matchPassword = async function (enteredPassword) {
   return bcrypt.compare(enteredPassword, this.password);
 };

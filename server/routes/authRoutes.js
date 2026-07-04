@@ -10,8 +10,5 @@ router.post("/logout", protect, logoutUser);
 router.get("/me", protect, getMe);
 
 
-router.get("/", (req, res) => {
-  res.json({ message: "Auth route working" });
-});
 
 export default router;
