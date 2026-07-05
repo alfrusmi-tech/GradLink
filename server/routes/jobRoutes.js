@@ -4,6 +4,7 @@ import {
   createJob,
   getJobs,
   getJobById,
+  getMyJobs,
 } from "../controllers/jobController.js";
 
 import { protect, authorize } from "../middleware/authMiddleware.js";
@@ -12,6 +13,7 @@ const router = express.Router();
 
 // PUBLIC ROUTES
 router.get("/", getJobs);
+router.get("/my-jobs", protect, authorize("recruiter"), getMyJobs);
 router.get("/:id", getJobById);
 
 // RECRUITER ONLY

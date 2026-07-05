@@ -37,7 +37,7 @@ export const createJob = async (req, res, next) => {
 // GET ALL JOBS
 export const getJobs = async (req, res, next) => {
   try {
-    const jobs = await Job.find().populate("company recruiter");
+    const jobs = await Job.find( {status: "open" }).populate("company recruiter");
     res.json(jobs);
   } catch (error) {
     next(error);
@@ -54,6 +54,18 @@ export const getJobById = async (req, res, next) => {
     }
 
     res.json(job);
+  } catch (error) {
+    next(error);
+  }
+};
+
+// GET MY JOBS (recruiter)
+export const getMyJobs = async (req, res, next) => {
+  try {
+    const jobs = await Job.find({ recruiter: req.user._id })
+      .populate("company")
+      .sort({ createdAt: -1 });
+    res.json(jobs);
   } catch (error) {
     next(error);
   }
