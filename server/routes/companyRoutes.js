@@ -1,18 +1,34 @@
 import express from "express";
+
 import {
   createCompany,
-  updateCompany,
-  getCompanyById,
   getCompanies,
+  getCompanyById,
+  updateCompany,
 } from "../controllers/companyController.js";
-import { protect, authorize } from "../middleware/authMiddleware.js";
+
+import { protect } from "../middleware/authMiddleware.js";
+import { authorize } from "../middleware/roleMiddleware.js";
 
 const router = express.Router();
 
-router.post("/", protect, authorize("recruiter"), createCompany);
-router.put("/:id", protect, authorize("recruiter"), updateCompany);
+router.get("/", getCompanies);
+
 router.get("/:id", getCompanyById);
-router.get("/", protect, authorize("admin"), getCompanies);
+
+router.post(
+  "/",
+  protect,
+  authorize("recruiter"),
+  createCompany
+);
+
+router.put(
+  "/:id",
+  protect,
+  authorize("recruiter"),
+  updateCompany
+);
 
 export default router;
 

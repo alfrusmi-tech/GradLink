@@ -1,32 +1,111 @@
 import mongoose from "mongoose";
 
-const cvSchema = new mongoose.Schema(
+const lastMatchSchema = new mongoose.Schema(
   {
-    user: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
-    fileName: { type: String, required: true },
-    fileUrl: { type: String, required: true },
-    rawText: { type: String, default: "" },
-
-    // Extracted data (via keyword-based parsing)
-    extractedSkills: [{ type: String }],
-    extractedEducation: [{ type: String }],
-    extractedExperience: [{ type: String }],
-    extractedCertifications: [{ type: String }],
-
-    // Most recent match run against a specific job (optional, cached)
-    lastMatch: {
-      job: { type: mongoose.Schema.Types.ObjectId, ref: "Job" },
-      matchPercentage: Number,
-      matchedSkills: [String],
-      missingSkills: [String],
-      suggestions: [String],
-      analyzedAt: Date,
+    job: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Job",
+      default: null,
     },
 
-    isActive: { type: Boolean, default: true },
+    matchPercentage: {
+      type: Number,
+      min: 0,
+      max: 100,
+      default: 0,
+    },
+
+    matchedSkills: {
+      type: [String],
+      default: [],
+    },
+
+    missingSkills: {
+      type: [String],
+      default: [],
+    },
+
+    suggestions: {
+      type: [String],
+      default: [],
+    },
+
+    analyzedAt: {
+      type: Date,
+      default: null,
+    },
   },
-  { timestamps: true }
+  {
+    _id: false,
+  }
+);
+
+const cvSchema = new mongoose.Schema(
+  {
+    user: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+      required: true,
+      unique: true,
+      index: true,
+    },
+
+    fileName: {
+      type: String,
+      required: true,
+      trim: true,
+    },
+
+    storedFileName: {
+      type: String,
+      required: true,
+    },
+
+    fileUrl: {
+      type: String,
+      required: true,
+    },
+
+    rawText: {
+      type: String,
+      default: "",
+    },
+
+    extractedSkills: {
+      type: [String],
+      default: [],
+    },
+
+    extractedEducation: {
+      type: [String],
+      default: [],
+    },
+
+    extractedExperience: {
+      type: [String],
+      default: [],
+    },
+
+    extractedCertifications: {
+      type: [String],
+      default: [],
+    },
+
+    lastMatch: {
+      type: lastMatchSchema,
+      default: () => ({}),
+    },
+
+    isActive: {
+      type: Boolean,
+      default: true,
+    },
+  },
+  {
+    timestamps: true,
+  }
 );
 
 const CV = mongoose.model("CV", cvSchema);
+
 export default CV;

@@ -1,29 +1,88 @@
-export const notFound = (req, res, next) => {
-  const error = new Error(`Not Found - ${req.originalUrl}`);
+import multer from "multer";
+
+export const notFound = (
+  req,
+  res,
+  next
+) => {
+  const error = new Error(
+    `Route not found: ${req.originalUrl}`
+  );
+
   res.status(404);
+
   next(error);
 };
 
-export const errorHandler = (err, req, res, next) => {
-  let statusCode = res.statusCode === 200 ? 500 : res.statusCode;
-  let message = err.message;
+export const errorHandler = (
+  error,
+  req,
+  res,
+  next
+) => {
+  console.error(error);
 
-  if (err.name === "CastError") {
-    statusCode = 404;
-    message = "Resource not found";
+  if (
+    error instanceof multer.MulterError
+  ) {
+    if (
+      error.code === "LIMIT_FILE_SIZE"
+    ) {
+      return res.status(400).json({
+        message:
+          "The uploaded file is too large.",
+      });
+    }
+
+    return res.status(400).json({
+      message:
+        error.message ||
+        "File upload failed.",
+    });
   }
 
-  if (err.code === 11000) {
-    statusCode = 400;
-    message = `Duplicate value`;
+  if (
+    error.message?.includes(
+      "Only PDF CV files are allowed"
+    )
+  ) {
+    return res.status(400).json({
+      message:
+        "Only PDF CV files are allowed.",
+    });
   }
 
-  if (err.name === "ValidationError") {
-    statusCode = 400;
-    message = Object.values(err.errors)
-      .map((val) => val.message)
-      .join(", ");
+  if (
+    error.name === "CastError"
+  ) {
+    return res.status(400).json({
+      message: "Invalid resource ID.",
+    });
   }
 
-  res.status(statusCode).json({ message });
+  if (
+    error.code === 11000
+  ) {
+    return res.status(400).json({
+      message:
+        "A record with this information already exists.",
+    });
+  }
+
+  const statusCode =
+    res.statusCode === 200
+      ? 500
+      : res.statusCode;
+
+  return res.status(statusCode).json({
+    message:
+      error.message ||
+      "Internal server error.",
+
+    stack:
+      process.env.NODE_ENV ===
+      "production"
+        ? undefined
+        : error.stack,
+  });
 };
