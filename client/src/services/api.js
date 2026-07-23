@@ -23,9 +23,8 @@ api.interceptors.request.use(
     return config;
   },
 
-  (error) => {
-    return Promise.reject(error);
-  }
+  (error) =>
+    Promise.reject(error)
 );
 
 api.interceptors.response.use(
@@ -33,18 +32,25 @@ api.interceptors.response.use(
 
   (error) => {
     if (
-      error.response?.status === 401
+      error.response?.status ===
+      401
     ) {
       const message =
-        error.response?.data?.message || "";
+        error.response?.data
+          ?.message || "";
 
       if (
         message
           .toLowerCase()
           .includes("expired")
       ) {
-        localStorage.removeItem("token");
-        localStorage.removeItem("user");
+        localStorage.removeItem(
+          "token"
+        );
+
+        localStorage.removeItem(
+          "user"
+        );
       }
     }
 

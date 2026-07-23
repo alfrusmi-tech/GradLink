@@ -17,7 +17,10 @@ const JobSeekerDashboard = () => {
   useEffect(() => {
     api
       .get("/applications/me")
-      .then((res) => setApplications(res.data))
+      .then((res) => {
+        const data = res.data?.applications;
+        setApplications(Array.isArray(data) ? data : []);
+      })
       .catch(() => setError("Failed to load applications"))
       .finally(() => setLoading(false));
   }, []);

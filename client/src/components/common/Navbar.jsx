@@ -57,6 +57,14 @@ const Navbar = () => {
               </Link>
             </>
           )}
+          {user?.role === "jobseeker" && (
+             <Link
+                 to="/applications/history"
+                 className="text-sm font-medium hover:text-indigo-200"
+             >
+               My Applications
+            </Link>
+          )}
 
           {user && (
             <div className="flex items-center gap-3">

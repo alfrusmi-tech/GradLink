@@ -10,19 +10,27 @@ const Login = () => {
   const { login } = useAuth();
   const navigate = useNavigate();
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setError("");
-    setLoading(true);
-    try {
-      const user = await login(email, password);
-      navigate(user.role === "recruiter" ? "/recruiter/dashboard" : "/jobs");
-    } catch (err) {
-      setError(err.response?.data?.message || "Login failed");
-    } finally {
-      setLoading(false);
+const handleSubmit = async (e) => {
+  e.preventDefault();
+  setError("");
+  setLoading(true);
+
+  try {
+    const user = await login(email, password);
+
+    if (user.role === "admin") {
+      navigate("/admin/dashboard");
+    } else if (user.role === "recruiter") {
+      navigate("/recruiter/dashboard");
+    } else {
+      navigate("/jobseeker/dashboard");
     }
-  };
+  } catch (err) {
+    setError(err.response?.data?.message || "Login failed");
+  } finally {
+    setLoading(false);
+  }
+};
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4">
