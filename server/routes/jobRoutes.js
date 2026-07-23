@@ -4,28 +4,78 @@ import {
   createJob,
   getJobs,
   getJobById,
+  getRecruiterJobs,
+  getRecruiterJobById,
+  updateJob,
+  deleteJob,
 } from "../controllers/jobController.js";
 
-import { protect } from "../middleware/authMiddleware.js";
-import { authorize } from "../middleware/roleMiddleware.js";
+import {
+  protect,
+} from "../middleware/authMiddleware.js";
+
+import {
+  authorize,
+} from "../middleware/roleMiddleware.js";
 
 const router = express.Router();
 
-// PUBLIC ROUTES
+/*
+|--------------------------------------------------------------------------
+| Public routes
+|--------------------------------------------------------------------------
+*/
+
 router.get("/", getJobs);
+
+/*
+|--------------------------------------------------------------------------
+| Recruiter routes
+|--------------------------------------------------------------------------
+| These routes must remain above router.get("/:id").
+*/
+
+router.get(
+  "/recruiter/mine",
+  protect,
+  authorize("recruiter"),
+  getRecruiterJobs
+);
+
+router.get(
+  "/recruiter/mine/:id",
+  protect,
+  authorize("recruiter"),
+  getRecruiterJobById
+);
+
+router.post(
+  "/",
+  protect,
+  authorize("recruiter"),
+  createJob
+);
+
+router.put(
+  "/:id",
+  protect,
+  authorize("recruiter"),
+  updateJob
+);
+
+router.delete(
+  "/:id",
+  protect,
+  authorize("recruiter"),
+  deleteJob
+);
+
+/*
+|--------------------------------------------------------------------------
+| Public single-job route
+|--------------------------------------------------------------------------
+*/
+
 router.get("/:id", getJobById);
 
-// RECRUITER ONLY
-router.post("/", protect, authorize("recruiter"), createJob);
-
 export default router;
-
-// Planned for next build stage:
-// POST   /api/jobs               - post new job (recruiter)
-// PUT    /api/jobs/:id           - update job (recruiter, owner only)
-// DELETE /api/jobs/:id           - delete job (recruiter, owner only)
-// GET    /api/jobs                - search/filter/sort jobs (public)
-// GET    /api/jobs/:id           - job details (public)
-// GET    /api/jobs/recruiter/mine - recruiter's own postings
-
-

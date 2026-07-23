@@ -18,6 +18,7 @@ import jobRoutes from "./routes/jobRoutes.js";
 import applicationRoutes from "./routes/applicationRoutes.js";
 import cvRoutes from "./routes/cvRoutes.js";
 import notificationRoutes from "./routes/notificationRoutes.js";
+import adminRoutes from "./routes/adminRoutes.js";
 
 dotenv.config();
 
@@ -90,7 +91,7 @@ app.use(
   "/api/notifications",
   notificationRoutes
 );
-
+app.use("/api/admin", adminRoutes);
 app.use(notFound);
 app.use(errorHandler);
 
